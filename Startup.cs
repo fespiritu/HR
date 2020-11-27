@@ -56,9 +56,7 @@ namespace HR
 
       var origins = new string[] {
                 "https://localhost:3000",
-                "https://localhost:5001",
-                "http://23.99.9.63/",
-                "https://23.99.9.63/"
+                "https://localhost:5001"
             };
       services.AddCors(opt => {
         opt.AddPolicy("CorsPolicy", policy => {
@@ -68,7 +66,7 @@ namespace HR
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, HumanResourcesContext db)
     {
       //if (env.IsDevelopment())
       //{
@@ -84,6 +82,8 @@ namespace HR
       app.UseMiddleware<ExceptionMiddleware>();
 
       app.UseStatusCodePagesWithReExecute("/errors/{0}");
+
+      db.Database.EnsureCreated();
 
       app.UseStaticFiles();
       if (!env.IsDevelopment())
