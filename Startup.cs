@@ -5,39 +5,85 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using HR.Errors;
+using HR.Helpers;
+using HR.Middleware;
+using AutoMapper;
+using Core.Interfaces;
+using Infrastructure.Data;
+
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 namespace HR
 {
   public class Startup
   {
+    // FE
+    private readonly IConfiguration _configuration;
     public Startup(IConfiguration configuration)
     {
-      Configuration = configuration;
+      // FE
+      // Configuration = configuration;
+      _configuration = configuration;
+
     }
 
-    public IConfiguration Configuration { get; }
+    // public IConfiguration Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+      services.AddAutoMapper(typeof(MappingProfiles));
+
       services.AddControllersWithViews();
+
+      // FE
+      services.AddDbContext<HumanResourcesContext>(x => x.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+
       // In production, the Angular files will be served from this directory
       services.AddSpaStaticFiles(configuration =>
       {
         configuration.RootPath = "ClientApp/dist";
+      });
+
+      var origins = new string[] {
+                "https://localhost:3000",
+                "https://localhost:5001",
+                "http://23.99.9.63/",
+                "https://23.99.9.63/"
+            };
+      services.AddCors(opt => {
+        opt.AddPolicy("CorsPolicy", policy => {
+          policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(origins);
+        });
       });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
-      else
-      {
-        app.UseExceptionHandler("/Error");
-      }
+      //if (env.IsDevelopment())
+      //{
+      //  app.UseDeveloperExceptionPage();
+      //}
+      //else
+      //{
+      //  app.UseExceptionHandler("/Error");
+      //}
+
+      // FE: To send back consistent error message object even with stack trace
+      // Test endpoint: }/api/Buggy/servererror
+      app.UseMiddleware<ExceptionMiddleware>();
+
+      app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
       app.UseStaticFiles();
       if (!env.IsDevelopment())
@@ -46,6 +92,9 @@ namespace HR
       }
 
       app.UseRouting();
+
+      // FE
+      app.UseCors("CorsPolicy");
 
       app.UseEndpoints(endpoints =>
       {
