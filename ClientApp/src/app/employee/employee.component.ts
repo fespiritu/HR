@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { IEmployee } from '../models/iemployee';
 import { EmployeeService } from './employee.service';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+// import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { AgGridAngular } from 'ag-grid-angular';
 
 @Component({
@@ -29,12 +29,12 @@ export class EmployeeComponent implements OnInit {
   rowData: IEmployee[];
   isRowSelected: boolean;
   selectedId: number;
-  modalRef: BsModalRef;
+  // modalRef: BsModalRef;
   informMessage: string;
   // isMessageModalShown: boolean;
 
-  constructor(private employeeService: EmployeeService,
-              private modalService: BsModalService
+  constructor(private employeeService: EmployeeService
+              // private modalService: BsModalService
               ) {
 
   }
@@ -133,17 +133,17 @@ export class EmployeeComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>): void {
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    // this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
-    this.modalRef.hide();
+   //  this.modalRef.hide();
     this.deleteItem();
   }
 
   decline(): void {
     // this.isMessageModalShown = false;
-    this.modalRef.hide();
+    // this.modalRef.hide();
   }
 
 }
