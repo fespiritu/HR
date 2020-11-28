@@ -2,8 +2,9 @@ import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { IEmployee } from '../models/iemployee';
 import { EmployeeService } from './employee.service';
-// import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AgGridAngular } from 'ag-grid-angular';
+
 
 @Component({
   selector: 'app-employee',
@@ -11,6 +12,11 @@ import { AgGridAngular } from 'ag-grid-angular';
   styleUrls: ['./employee.component.css']
 })
 export class EmployeeComponent implements OnInit {
+
+  // const MODALS: {[name: string]: Type<any>} = {
+  //   focusFirst: EmployeeComponent,
+  //   autofocus: NgbdModalConfirmAutofocus
+  // };
 
   @ViewChild('agGrid', {static: false}) agGrid: AgGridAngular;
   columnDefs = [
@@ -29,12 +35,10 @@ export class EmployeeComponent implements OnInit {
   rowData: IEmployee[];
   isRowSelected: boolean;
   selectedId: number;
-  // modalRef: BsModalRef;
   informMessage: string;
-  // isMessageModalShown: boolean;
 
-  constructor(private employeeService: EmployeeService
-              // private modalService: BsModalService
+  constructor(private employeeService: EmployeeService,
+              private _modalService: NgbModal
               ) {
 
   }
@@ -133,17 +137,16 @@ export class EmployeeComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>): void {
-    // this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this._modalService.open(template);
   }
 
   confirm(): void {
-   //  this.modalRef.hide();
+   this._modalService.dismissAll();
     this.deleteItem();
   }
 
   decline(): void {
-    // this.isMessageModalShown = false;
-    // this.modalRef.hide();
+    this._modalService.dismissAll();
   }
 
 }

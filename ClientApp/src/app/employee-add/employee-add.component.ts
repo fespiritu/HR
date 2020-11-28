@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { formatDate } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-// import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EmployeeService } from '../employee/employee.service';
 import { Employee } from './../employee';
 import { IEmployeeApi } from './../models/iemployee';
@@ -19,13 +19,12 @@ export class EmployeeAddComponent implements OnInit {
   isEditMode: boolean;
   title: string;
   selectedId: number;
-  // modalRef: BsModalRef;
   isMessageModalShown: boolean;
 
   constructor(private router: Router, private formBuilder: FormBuilder,
               private employeeService: EmployeeService,
-              private route: ActivatedRoute
-              // private modalService: BsModalService
+              private route: ActivatedRoute,
+              private _modalService: NgbModal
              ) {
     this.registerError = '';
   }
@@ -168,17 +167,17 @@ export class EmployeeAddComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>): void {
-   // this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this._modalService.open(template);
   }
 
   confirm(): void {
-    // this.modalRef.hide();
+    this._modalService.dismissAll();
     this.onSubmitClick();
   }
 
   decline(): void {
     this.isMessageModalShown = false;
-    // this.modalRef.hide();
+    this._modalService.dismissAll();
   }
 }
 
