@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { formatDate } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-// import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { EmployeeService } from '../employee/employee.service';
 import { Employee } from './../employee';
 import { IEmployeeApi } from './../models/iemployee';
@@ -14,18 +14,18 @@ import { IEmployeeApi } from './../models/iemployee';
 })
 export class EmployeeAddComponent implements OnInit {
 
-  employeeForm!: FormGroup;
+  employeeForm: FormGroup;
   registerError: string;
-  isEditMode!: boolean;
-  title!: string;
-  selectedId!: number;
-  //modalRef!: BsModalRef;
-  isMessageModalShown!: boolean;
+  isEditMode: boolean;
+  title: string;
+  selectedId: number;
+  modalRef: BsModalRef;
+  isMessageModalShown: boolean;
 
   constructor(private router: Router, private formBuilder: FormBuilder,
               private employeeService: EmployeeService,
-              private route: ActivatedRoute
-             // private modalService: BsModalService
+              private route: ActivatedRoute,
+              private modalService: BsModalService
              ) {
     this.registerError = '';
   }
@@ -84,9 +84,7 @@ export class EmployeeAddComponent implements OnInit {
   get isActive(): any { return this.employeeForm.get('isActive'); }
 
   onSubmitClick(): void {
-    console.log('submit this.employeeForm: ', this.employeeForm);
     if (this.employeeForm.valid) {
-      console.log('this.employeeForm : ', this.employeeForm );
       const employee = this.employeeForm.value as Employee;
       if (this.isEditMode) {
         // Edit mode
@@ -97,7 +95,6 @@ export class EmployeeAddComponent implements OnInit {
         this.postEmployee(employee);
       }
     } else {
-      console.log('submit not valid');
       this.validateAllFormFields(this.employeeForm);
     }
   }
@@ -105,12 +102,10 @@ export class EmployeeAddComponent implements OnInit {
   putEmployee(employee: Employee): void {
     const message = this.employeeService.putEmployee(employee).subscribe(
       (response: any) => {
-        console.log('submit response: ', response);
         this.router.navigate(['employees']);
       },
       (err: any) => {
         const msg = `Error in saving record. (Status ${err.status}): ${err.statusText}`;
-        console.log('putEmployee err: ', err);
         alert(msg);
         // this.router.navigateByUrl('employees');
       });
@@ -119,14 +114,11 @@ export class EmployeeAddComponent implements OnInit {
   postEmployee(employee: Employee): void {
     const message = this.employeeService.postEmployee(employee).subscribe(
       (response: any) => {
-        console.log('submit response: ', response);
         this.router.navigate(['employees']);
       },
       (err: any) => {
         const msg = `Error in saving record. (Status ${err.status}): ${err.statusText}`;
-        console.log('postEmployee err: ', err);
         alert(msg);
-        // this.router.navigateByUrl('employees');
       });
   }
 
@@ -147,7 +139,6 @@ export class EmployeeAddComponent implements OnInit {
       (employee: IEmployeeApi) => this.editEmployee(employee),
       (err: any) => {
         const msg = `Error in getting records. (Status ${err.status}): ${err.statusText}`;
-        console.log('Get Employee err: ', err);
         alert(msg);
         this.router.navigateByUrl('employees');
       }
@@ -156,7 +147,6 @@ export class EmployeeAddComponent implements OnInit {
 
   // When setting dates, use this format: 'yyyy-MM-dd'
   editEmployee(emp: IEmployeeApi): void {
-    console.log('editEmployee: ', emp);
     this.employeeForm.patchValue({
       firstName: emp.firstName,
       lastName:  emp.lastName,
@@ -172,26 +162,23 @@ export class EmployeeAddComponent implements OnInit {
       dateOfJoining: formatDate(emp.dateOfJoining, 'yyyy-MM-dd', 'en'),
       isActive: emp.isActive
     });
-
-    console.log('editEmployee this.employeeForm: ', this.employeeForm.value);
   }
   cancel(): void {
    this.router.navigateByUrl('employees');
   }
 
   openModal(template: TemplateRef<any>): void {
-   // this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+   this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
-   // this.modalRef.hide();
-    console.log('Saving...');
+    this.modalRef.hide();
     this.onSubmitClick();
   }
 
   decline(): void {
     this.isMessageModalShown = false;
- //   this.modalRef.hide();
+    this.modalRef.hide();
   }
 }
 

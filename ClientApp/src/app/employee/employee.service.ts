@@ -31,31 +31,19 @@ export class EmployeeService {
   }
 
   postEmployee(employee: Employee): any {
-    console.log('service add: ', employee);
     return this.http.post<any>(this.baseUrl + '/employees', employee, { responseType: 'json', observe: 'response' });
-
-    // .pipe(map(response => {
-    //   if (response) {
-    //     console.log('addEmployee response: ', response);
-    //   }
-    //   return response.body;
-    // }));
   }
 
   putEmployee(employee: Employee): any {
-    console.log('service put: ', employee);
     return this.http.put<any>(this.baseUrl + '/employees/' + employee.id, employee, { responseType: 'json', observe: 'response' });
   }
 
   editEmployee(id: number): void {
-    console.log('service edit: ', id);
     this.router.navigateByUrl('editEmployee');
     this.gotoForm('editEmployee', id);
   }
 
   deleteEmployee(id: number): any {
-    console.log('service delete: ', id);
     return this.http.delete<void>(`${this.baseUrl}/employees/${id}`);
-      // .pipe(catchError(this.handleError));
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { IEmployee } from '../models/iemployee';
 import { EmployeeService } from './employee.service';
-// import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { AgGridAngular } from 'ag-grid-angular';
 
 @Component({
@@ -27,14 +27,14 @@ export class EmployeeComponent implements OnInit {
   ];
 
   rowData: IEmployee[];
-  isRowSelected!: boolean;
-  selectedId!: number;
-  // modalRef!: BsModalRef;
-  informMessage!: string;
+  isRowSelected: boolean;
+  selectedId: number;
+  modalRef: BsModalRef;
+  informMessage: string;
   // isMessageModalShown: boolean;
 
-  constructor(private employeeService: EmployeeService
-              // private modalService: BsModalService
+  constructor(private employeeService: EmployeeService,
+              private modalService: BsModalService
               ) {
 
   }
@@ -44,7 +44,6 @@ export class EmployeeComponent implements OnInit {
     this.informMessage = '';
     // this.isMessageModalShown = false;
     this.employeeService.getEmployees().subscribe(response => {
-      console.log('response: ', response);
       this.isRowSelected = false;
       // set delay to see loading icon
       // setTimeout(() => {
@@ -61,7 +60,6 @@ export class EmployeeComponent implements OnInit {
         DateOfJoining: formatDate(r.dateOfJoining, 'MM/dd/yyyy', 'en_US'),
         IsActiveDisplay: r.isActive ? 'Yes' : 'No'
       }));
-      console.log('grid this.employees: ', this.rowData);
     }, error => {
       console.log('error: ', error);
     });
@@ -79,7 +77,6 @@ export class EmployeeComponent implements OnInit {
   }
 
   getSelectedId(selectedId: string): number {
-    console.log('getSelectedId selectedId: ', selectedId);
     const id = selectedId ? Number(selectedId) : 0;
     return id;
   }
@@ -97,9 +94,7 @@ export class EmployeeComponent implements OnInit {
   // in the grid these methods pass back a csv list of selected ids
   getSelectedRows(): string {
     const selectedNodes = this.agGrid.api.getSelectedNodes();
-    // console.log('freddie selectedNodes: ', selectedNodes);
     const selectedData = selectedNodes.map(node => node.data );
-    console.log('freddie selectedData: ', selectedData);
     const idCsv = selectedData.map(node => node.ID).join(',');
     return idCsv;
   }
@@ -110,7 +105,6 @@ export class EmployeeComponent implements OnInit {
 
   editItem(): void {
     const selectedId = this.getSelectedRows();
-    console.log('editItem selectedId: ', selectedId);
     const id = this.getSelectedId(selectedId);
     if (id) {
       this.employeeService.gotoForm('editEmployee', id);
@@ -119,7 +113,6 @@ export class EmployeeComponent implements OnInit {
 
   removeRows(): void {
     const selectedRows = this.agGrid.api.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
     // This looks deprecated so watch out when updating control
     this.agGrid.api.updateRowData({
       remove: selectedRows
@@ -127,14 +120,12 @@ export class EmployeeComponent implements OnInit {
   }
   deleteItem(): void {
     const selectedId = this.getSelectedRows();
-    console.log('delete selectedId: ', selectedId);
     const message = this.employeeService.deleteEmployee(this.selectedId)
       .subscribe(
         () => this.removeRows(),
         (err: any) => {
           const msg = `Error in deleting record. (Status ${err.status}): ${err.statusText}`;
           this.informMessage = msg;
-          console.log('Delete err: ', err);
           // this.isMessageModalShown = true;
           alert(msg);
         }
@@ -142,18 +133,17 @@ export class EmployeeComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>): void {
-    // this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
-    // this.modalRef.hide();
-    console.log('Deleting...');
+    this.modalRef.hide();
     this.deleteItem();
   }
 
   decline(): void {
     // this.isMessageModalShown = false;
-   //  this.modalRef.hide();
+    this.modalRef.hide();
   }
 
 }
