@@ -1,0 +1,10 @@
+button {
+  display: inline-block;
+  margin: 10px 2px 10px 2px;
+  width: 70px;
+}
+
+.form-group.required .control-label:before {
+  content:"*";
+  color:red;
+}

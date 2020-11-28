@@ -1,0 +1,40 @@
+
+  <h1>Employees</h1>
+  <div class="row">
+    <div class="col-12 ml-auto">
+      <div class="btn-group">
+        <button (click)="addItem()" class="btn btn-primary">Add</button>
+        <!-- <a routerLink="/" role="button" class="nav-link">Add</a> -->
+        <button (click)="editItem()" [disabled]="!isRowSelected"  class="btn btn-secondary">Edit</button>
+        <button (click)="openModal(template)" [disabled]="!isRowSelected" class="btn btn-danger">Delete</button>
+      </div>
+      <ag-grid-angular
+        #agGrid
+        style="width: auto; height: 500px;"
+        class="ag-theme-balham"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        rowSelection="single"
+        (selectionChanged)="onSelectionChanged()"
+        (rowDoubleClicked)="onRowDoubleClicked()"
+      >
+      </ag-grid-angular>
+      <!-- rowSelection="multiple" -->
+    </div>
+    <ng-template #template>
+      <div class="modal-body text-center">
+        <p>Delete this record?</p>
+        <button type="button" class="btn btn-default" (click)="confirm()" >Yes</button>
+        <button type="button" class="btn btn-primary" (click)="decline()" >No</button>
+      </div>
+    </ng-template>
+    <!-- <div *ngIf="isMessageModalShown">
+      <ng-template #informTemplate>
+        <div class="modal-body text-center">
+          <p>{{ informMessage }}</p>
+          <button type="button" class="btn btn-default" (click)="decline()" >Ok</button>
+        </div>
+      </ng-template>
+    </div> -->
+  </div>
+
